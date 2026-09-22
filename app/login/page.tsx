@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { Button } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
@@ -52,9 +52,9 @@ export default function LoginPage() {
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 p-4 relative">
       <div className="absolute top-4 right-4 md:top-8 md:right-8">
-        <Button asChild variant="outline">
-          <Link href="/">Back to Home</Link>
-        </Button>
+        <Link href="/" className={buttonVariants({ variant: "outline" })}>
+          Back to Home
+        </Link>
       </div>
       <Card className="w-full max-w-md">
         <CardHeader>
