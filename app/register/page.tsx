@@ -6,6 +6,7 @@ import { Button, buttonVariants } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { useAuth } from "@/contexts/AuthContext";
 
 export default function RegisterPage() {
   const [name, setName] = useState("");
@@ -18,8 +19,11 @@ export default function RegisterPage() {
     email?: string;
     password?: string;
     confirmPassword?: string;
+    auth?: string;
   }>({});
   const [successMsg, setSuccessMsg] = useState("");
+
+  const { signUp } = useAuth();
 
   const validateEmail = (email: string) => {
     return String(email)
@@ -29,7 +33,7 @@ export default function RegisterPage() {
       );
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setSuccessMsg("");
     
@@ -38,6 +42,7 @@ export default function RegisterPage() {
       email?: string;
       password?: string;
       confirmPassword?: string;
+      auth?: string;
     } = {};
     let isValid = true;
 
@@ -77,7 +82,12 @@ export default function RegisterPage() {
     setErrors(newErrors);
 
     if (isValid) {
-      setSuccessMsg("Register: Registration successful (demo)");
+      const { error } = await signUp(email, password);
+      if (error) {
+        setErrors({ ...newErrors, auth: error.message });
+      } else {
+        setSuccessMsg("Registration successful.");
+      }
     }
   };
 
@@ -170,6 +180,12 @@ export default function RegisterPage() {
                 </p>
               )}
             </div>
+
+            {errors.auth && (
+              <p data-testid="error-auth" className="text-sm text-red-500 text-center font-medium">
+                {errors.auth}
+              </p>
+            )}
 
             <Button type="submit" data-testid="register-submit" className="w-full">
               Register

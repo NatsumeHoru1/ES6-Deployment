@@ -6,13 +6,18 @@ import { Button, buttonVariants } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { useAuth } from "@/contexts/AuthContext";
+import { useRouter } from "next/navigation";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   
-  const [errors, setErrors] = useState<{ email?: string; password?: string }>({});
+  const [errors, setErrors] = useState<{ email?: string; password?: string; auth?: string }>({});
   const [successMsg, setSuccessMsg] = useState("");
+
+  const { signIn } = useAuth();
+  const router = useRouter();
 
   const validateEmail = (email: string) => {
     return String(email)
@@ -22,11 +27,11 @@ export default function LoginPage() {
       );
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setSuccessMsg("");
     
-    const newErrors: { email?: string; password?: string } = {};
+    const newErrors: { email?: string; password?: string; auth?: string } = {};
     let isValid = true;
 
     if (!email) {
@@ -45,7 +50,12 @@ export default function LoginPage() {
     setErrors(newErrors);
 
     if (isValid) {
-      setSuccessMsg("Login: Login successful (demo)");
+      const { error } = await signIn(email, password);
+      if (error) {
+        setErrors({ ...newErrors, auth: error.message });
+      } else {
+        router.push("/");
+      }
     }
   };
 
@@ -100,6 +110,12 @@ export default function LoginPage() {
                 </p>
               )}
             </div>
+
+            {errors.auth && (
+              <p data-testid="error-auth" className="text-sm text-red-500 text-center font-medium">
+                {errors.auth}
+              </p>
+            )}
 
             <Button type="submit" data-testid="login-submit" className="w-full">
               Sign In
