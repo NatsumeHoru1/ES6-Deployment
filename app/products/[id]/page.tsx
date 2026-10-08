@@ -67,7 +67,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
               </div>
             </div>
             
-            <p data-testid="detail-price" className="text-4xl font-bold text-blue-600 mb-6">
+            <p data-testid="detail-price" className="text-4xl font-bold mb-6" style={{ color: "#74b33a" }}>
               ${product.price.toFixed(2)}
             </p>
             
