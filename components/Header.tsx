@@ -10,18 +10,18 @@ export function Header() {
   const { favorites } = useFavorites();
 
   return (
-    <header className="border-b bg-white p-4 flex justify-between items-center sticky top-0 z-10 shadow-sm">
+    <header className="border-b p-4 flex justify-between items-center sticky top-0 z-10 shadow-sm" style={{ backgroundColor: "#b5e48c" }}>
       <Link href="/">
-        <h1 className="text-xl font-bold">My Store</h1>
+        <h1 className="text-xl font-bold text-gray-900">My Store</h1>
       </Link>
       <nav className="flex gap-4 items-center">
         {!loading && (
           user ? (
             <>
-              <Link href="/favorites" data-testid="link-favorites" className="text-sm font-medium hover:underline flex items-center gap-1">
+              <Link href="/favorites" data-testid="link-favorites" className="text-sm font-medium text-gray-900 hover:text-black hover:underline flex items-center gap-1">
                 Favorites (<span data-testid="favorites-count">{favorites.length}</span>)
               </Link>
-              <Link href="/account" data-testid="user-email" className="text-sm font-medium hover:underline">
+              <Link href="/account" data-testid="user-email" className="text-sm font-medium text-gray-900 hover:text-black hover:underline">
                 {user.email}
               </Link>
               <Button data-testid="btn-logout" onClick={() => signOut()} variant="outline">

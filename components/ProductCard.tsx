@@ -35,7 +35,8 @@ export function ProductCard({ product }: ProductCardProps) {
         <Link 
           href={`/products/${product.id}`}
           data-testid="link-detail" 
-          className="text-sm font-medium hover:underline text-blue-600"
+          className="text-sm font-medium text-gray-900 px-4 py-2 rounded-md transition-opacity hover:opacity-90"
+          style={{ backgroundColor: "#b5e48c" }}
         >
           View Details
         </Link>
