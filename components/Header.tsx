@@ -3,9 +3,11 @@
 import Link from "next/link";
 import { buttonVariants, Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/AuthContext";
+import { useFavorites } from "@/contexts/FavoritesContext";
 
 export function Header() {
   const { user, signOut, loading } = useAuth();
+  const { favorites } = useFavorites();
 
   return (
     <header className="border-b bg-white p-4 flex justify-between items-center sticky top-0 z-10 shadow-sm">
@@ -16,6 +18,9 @@ export function Header() {
         {!loading && (
           user ? (
             <>
+              <Link href="/favorites" data-testid="link-favorites" className="text-sm font-medium hover:underline flex items-center gap-1">
+                Favorites (<span data-testid="favorites-count">{favorites.length}</span>)
+              </Link>
               <Link href="/account" data-testid="user-email" className="text-sm font-medium hover:underline">
                 {user.email}
               </Link>
