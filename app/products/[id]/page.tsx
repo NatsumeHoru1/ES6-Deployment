@@ -51,19 +51,40 @@ export default async function ProductPage({ params }: ProductPageProps) {
             priority
           />
         </div>
-        <div className="flex flex-col">
-          <div className="flex justify-between items-start mb-2">
-            <h1 data-testid="detail-name" className="text-3xl font-bold">{product.name}</h1>
-            <FavoriteButton productId={product.id} />
-          </div>
-          <p data-testid="detail-category" className="text-sm text-gray-500 uppercase tracking-wide mb-4">
-            {product.category}
-          </p>
-          <p data-testid="detail-price" className="text-2xl font-semibold mb-6">
-            ${product.price.toFixed(2)}
-          </p>
-          <div data-testid="detail-description" className="text-gray-700 leading-relaxed mb-8">
-            {product.description}
+        <div className="flex flex-col justify-center">
+          <div className="bg-white p-8 rounded-2xl shadow-sm border flex flex-col h-full justify-center">
+            <div className="flex justify-between items-start mb-4">
+              <div>
+                <span data-testid="detail-category" className="inline-block px-3 py-1 bg-gray-100 text-gray-800 text-xs font-bold uppercase tracking-wider rounded-full mb-3">
+                  {product.category}
+                </span>
+                <h1 data-testid="detail-name" className="text-3xl font-extrabold text-gray-900 tracking-tight leading-none mb-2">
+                  {product.name}
+                </h1>
+              </div>
+              <div className="transform scale-110 mt-1">
+                <FavoriteButton productId={product.id} />
+              </div>
+            </div>
+            
+            <p data-testid="detail-price" className="text-4xl font-bold text-blue-600 mb-6">
+              ${product.price.toFixed(2)}
+            </p>
+            
+            <div className="h-px bg-gray-200 w-full mb-6"></div>
+            
+            <div data-testid="detail-description" className="text-gray-600 leading-relaxed mb-8 text-lg">
+              {product.description}
+            </div>
+            
+            <div className="mt-auto">
+              <div className="flex items-center gap-2 text-sm text-gray-500 bg-gray-50 p-4 rounded-lg">
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-green-500" viewBox="0 0 20 20" fill="currentColor">
+                  <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                </svg>
+                In stock and ready to ship
+              </div>
+            </div>
           </div>
         </div>
       </div>
