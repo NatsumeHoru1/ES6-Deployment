@@ -35,13 +35,11 @@ export function ProductCard({ product }: ProductCardProps) {
         <Link 
           href={`/products/${product.id}`}
           data-testid="link-detail" 
-          className="text-sm font-bold text-gray-900 px-4 py-2 rounded-md transition-all duration-300 shadow-sm"
+          className="text-sm font-bold text-gray-900 px-4 py-2 rounded-md transition-all duration-300 shadow-sm hover:bg-[#76c893]"
           style={{ 
             backgroundColor: "#b5e48c",
             border: "2px solid #99d98c"
           }}
-          onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = "#76c893")}
-          onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = "#b5e48c")}
         >
           View Details
         </Link>
