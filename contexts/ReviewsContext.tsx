@@ -1,6 +1,6 @@
 "use client";
 
-import React, { createContext, useContext, useReducer, useEffect, useMemo } from "react";
+import React, { createContext, useContext, useReducer, useEffect, useMemo, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabaseClient";
 import { useAuth } from "@/contexts/AuthContext";
@@ -10,18 +10,23 @@ type ReviewAction =
   | { type: "SET"; payload: Review[] }
   | { type: "ADD"; payload: Review }
   | { type: "UPDATE"; payload: Review }
-  | { type: "REMOVE"; payload: number };
+  | { type: "REMOVE"; payload: number | string };
 
 function reviewsReducer(state: Review[], action: ReviewAction): Review[] {
   switch (action.type) {
     case "SET":
       return action.payload;
     case "ADD":
-      return [action.payload, ...state.filter((r) => r.id !== action.payload.id)];
+      return [
+        action.payload,
+        ...state.filter((r) => String(r.id) !== String(action.payload.id)),
+      ];
     case "UPDATE":
-      return state.map((r) => (r.id === action.payload.id ? action.payload : r));
+      return state.map((r) =>
+        String(r.id) === String(action.payload.id) ? action.payload : r
+      );
     case "REMOVE":
-      return state.filter((r) => r.id !== action.payload);
+      return state.filter((r) => String(r.id) !== String(action.payload));
     default:
       return state;
   }
@@ -32,7 +37,7 @@ interface ReviewsContextType {
   myReview: Review | null;
   submitReview: (rating: number, comment: string) => Promise<Review>;
   updateReview: (rating: number, comment: string) => Promise<Review>;
-  deleteReview: () => Promise<void>;
+  deleteReview: (idToDelete?: number | string) => Promise<void>;
 }
 
 const ReviewsContext = createContext<ReviewsContextType | undefined>(undefined);
@@ -51,14 +56,23 @@ export function ReviewsProvider({
   const [reviews, dispatch] = useReducer(reviewsReducer, initialReviews);
   const { user } = useAuth();
   const router = useRouter();
+  const initialRef = useRef(initialReviews);
 
   useEffect(() => {
-    dispatch({ type: "SET", payload: initialReviews });
+    if (initialRef.current !== initialReviews) {
+      initialRef.current = initialReviews;
+      dispatch({ type: "SET", payload: initialReviews });
+    }
   }, [initialReviews]);
 
   const myReview = useMemo(() => {
     if (!user) return null;
-    return reviews.find((r) => r.user_id === user.id) || null;
+    return (
+      reviews.find(
+        (r) =>
+          String(r.user_id).toLowerCase() === String(user.id).toLowerCase()
+      ) || null
+    );
   }, [reviews, user]);
 
   const submitReview = async (rating: number, comment: string): Promise<Review> => {
@@ -109,19 +123,22 @@ export function ReviewsProvider({
     }
 
     dispatch({ type: "UPDATE", payload: data as Review });
-    router.refresh();
     return data as Review;
   };
 
-  const deleteReview = async (): Promise<void> => {
-    if (!myReview) {
+  const deleteReview = async (idToDelete?: number | string): Promise<void> => {
+    const target = idToDelete
+      ? reviews.find((r) => String(r.id) === String(idToDelete)) || myReview
+      : myReview;
+
+    if (!target) {
       throw new Error("No review to delete");
     }
 
     const previousReviews = [...reviews];
-    const reviewId = myReview.id;
+    const reviewId = target.id;
 
-    // Optimistic delete
+    // Optimistic delete: remove immediately from UI
     dispatch({ type: "REMOVE", payload: reviewId });
 
     const { error } = await supabase
@@ -134,8 +151,6 @@ export function ReviewsProvider({
       dispatch({ type: "SET", payload: previousReviews });
       throw new Error(error.message);
     }
-
-    router.refresh();
   };
 
   return (

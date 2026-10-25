@@ -57,10 +57,10 @@ export function ReviewsSection({ productId }: ReviewsSectionProps) {
     }
   };
 
-  const handleDelete = async () => {
+  const handleDelete = async (review: Review) => {
     setDeleteError(null);
     try {
-      await deleteReview();
+      await deleteReview(review.id);
     } catch (err: any) {
       setDeleteError(err.message || "Failed to delete review");
     }
@@ -181,7 +181,7 @@ export function ReviewsSection({ productId }: ReviewsSectionProps) {
                     <button
                       type="button"
                       data-testid="btn-delete-review"
-                      onClick={handleDelete}
+                      onClick={() => handleDelete(review)}
                       className="text-xs font-semibold px-3 py-1.5 rounded bg-red-50 hover:bg-red-100 text-red-600 transition-colors"
                     >
                       Delete
