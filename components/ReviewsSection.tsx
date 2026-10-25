@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useMemo } from "react";
 import Link from "next/link";
 import { useReviews } from "@/contexts/ReviewsContext";
 import { useAuth } from "@/contexts/AuthContext";
@@ -21,12 +21,33 @@ export function ReviewsSection({ productId }: ReviewsSectionProps) {
   const [editError, setEditError] = useState<string | null>(null);
   const [isUpdating, setIsUpdating] = useState<boolean>(false);
   const [deleteError, setDeleteError] = useState<string | null>(null);
+  const [sortBy, setSortBy] = useState<"newest" | "oldest" | "highest" | "lowest">("newest");
 
   const count = reviews.length;
   const average =
     count > 0
       ? Math.round((reviews.reduce((acc, r) => acc + r.rating, 0) / count) * 10) / 10
       : 0;
+
+  const sortedReviews = useMemo(() => {
+    const list = [...reviews];
+    switch (sortBy) {
+      case "newest":
+        return list.sort(
+          (a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+        );
+      case "oldest":
+        return list.sort(
+          (a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
+        );
+      case "highest":
+        return list.sort((a, b) => b.rating - a.rating);
+      case "lowest":
+        return list.sort((a, b) => a.rating - b.rating);
+      default:
+        return list;
+    }
+  }, [reviews, sortBy]);
 
   const handleStartEdit = (review: Review) => {
     setEditingId(review.id);
@@ -89,6 +110,25 @@ export function ReviewsSection({ productId }: ReviewsSectionProps) {
             </div>
           </div>
         </div>
+
+        {reviews.length > 1 && (
+          <div className="flex items-center gap-2 self-start sm:self-center">
+            <label htmlFor="sort-reviews" className="text-sm font-semibold text-gray-700 whitespace-nowrap">
+              Sắp xếp:
+            </label>
+            <select
+              id="sort-reviews"
+              value={sortBy}
+              onChange={(e) => setSortBy(e.target.value as any)}
+              className="p-2 text-sm bg-white border border-gray-300 rounded-lg text-gray-800 focus:ring-green-500 focus:border-green-500 font-medium cursor-pointer shadow-sm"
+            >
+              <option value="newest">Mới nhất (Newest)</option>
+              <option value="oldest">Cũ nhất (Oldest)</option>
+              <option value="highest">Điểm cao nhất (5 ★ &rarr; 1 ★)</option>
+              <option value="lowest">Điểm thấp nhất (1 ★ &rarr; 5 ★)</option>
+            </select>
+          </div>
+        )}
       </div>
 
       {deleteError && (
@@ -120,7 +160,7 @@ export function ReviewsSection({ productId }: ReviewsSectionProps) {
 
       {/* Reviews List */}
       <div className="space-y-4">
-        {reviews.length === 0 ? (
+        {sortedReviews.length === 0 ? (
           <div
             data-testid="reviews-empty"
             className="py-12 text-center text-gray-500 bg-gray-50 rounded-xl border border-dashed"
@@ -128,7 +168,7 @@ export function ReviewsSection({ productId }: ReviewsSectionProps) {
             No reviews yet. Be the first to review this product!
           </div>
         ) : (
-          reviews.map((review) => {
+          sortedReviews.map((review) => {
             const isOwnReview = !!user && user.id === review.user_id;
             const isBeingEdited = editingId === review.id;
 
