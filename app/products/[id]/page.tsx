@@ -3,6 +3,11 @@ import Image from "next/image";
 import Link from "next/link";
 import { products } from "@/lib/products";
 import { FavoriteButton } from "@/components/FavoriteButton";
+import { getProductReviews } from "@/lib/reviews";
+import { ReviewsProvider } from "@/contexts/ReviewsContext";
+import { ReviewsSection } from "@/components/ReviewsSection";
+
+export const dynamicParams = false;
 
 interface ProductPageProps {
   params: Promise<{ id: string }>;
@@ -34,6 +39,8 @@ export default async function ProductPage({ params }: ProductPageProps) {
   if (!product) {
     notFound();
   }
+
+  const reviewsData = await getProductReviews(product.id);
 
   return (
     <div className="max-w-4xl mx-auto p-6">
@@ -88,6 +95,11 @@ export default async function ProductPage({ params }: ProductPageProps) {
           </div>
         </div>
       </div>
+
+      {/* Reviews Section wrapped with ReviewsProvider */}
+      <ReviewsProvider productId={product.id} initialReviews={reviewsData.reviews}>
+        <ReviewsSection productId={product.id} />
+      </ReviewsProvider>
     </div>
   );
 }
