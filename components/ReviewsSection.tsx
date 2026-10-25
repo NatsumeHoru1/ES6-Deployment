@@ -114,7 +114,7 @@ export function ReviewsSection({ productId }: ReviewsSectionProps) {
         {reviews.length > 1 && (
           <div className="flex items-center gap-2 self-start sm:self-center">
             <label htmlFor="sort-reviews" className="text-sm font-semibold text-gray-700 whitespace-nowrap">
-              Sắp xếp:
+              Sort by:
             </label>
             <select
               id="sort-reviews"
@@ -122,10 +122,10 @@ export function ReviewsSection({ productId }: ReviewsSectionProps) {
               onChange={(e) => setSortBy(e.target.value as any)}
               className="p-2 text-sm bg-white border border-gray-300 rounded-lg text-gray-800 focus:ring-green-500 focus:border-green-500 font-medium cursor-pointer shadow-sm"
             >
-              <option value="newest">Mới nhất (Newest)</option>
-              <option value="oldest">Cũ nhất (Oldest)</option>
-              <option value="highest">Điểm cao nhất (5 ★ &rarr; 1 ★)</option>
-              <option value="lowest">Điểm thấp nhất (1 ★ &rarr; 5 ★)</option>
+              <option value="newest">Newest first</option>
+              <option value="oldest">Oldest first</option>
+              <option value="highest">Highest rating (5 ★ &rarr; 1 ★)</option>
+              <option value="lowest">Lowest rating (1 ★ &rarr; 5 ★)</option>
             </select>
           </div>
         )}
